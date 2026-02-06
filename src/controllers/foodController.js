@@ -1,15 +1,15 @@
-import * as model from '../models/exemploModel.js';
+import * as model from '../models/foodModel.js';
 
 export const getAll = async (req, res) => {
     try {
-        const exemplos = await model.findAll(req.query);
+        const foods = await model.findAll(req.query);
 
-        if (!exemplos || exemplos.length === 0) {
+        if (!foods || foods.length === 0) {
             return res.status(200).json({
                 message: 'Nenhum registro encontrado.',
             });
         }
-        res.json(exemplos);
+        res.json(foods);
     } catch (error) {
         console.error('Erro ao buscar:', error);
         res.status(500).json({ error: 'Erro ao buscar registros' });
@@ -24,17 +24,18 @@ export const create = async (req, res) => {
             });
         }
 
-        const { nome, descricao, ano, preco } = req.body;
+        const { name, description, price, category, available } = req.body;
 
-        if (!nome) return res.status(400).json({ error: 'O nome (nome) é obrigatório!' });
-        if (!ano) return res.status(400).json({ error: 'O ano (ano) é obrigatório!' });
-        if (!preco) return res.status(400).json({ error: 'O preço (preco) é obrigatório!' });
+        if (!name) return res.status(400).json({ error: 'O nome (name) é obrigatório!' });
+        if (!description) return res.status(400).json({ error: 'A descrição (description) é obrigatória!' });
+        if (!price) return res.status(400).json({ error: 'O preço (price) é obrigatório!' });
+        if (!category) return res.status(400).json({ error: 'A categoria (category) é obrigatória!' });
 
         const data = await model.create({
-            nome,
-            descricao,
-            ano: parseInt(ano),
-            preco: parseFloat(preco),
+            name,
+            description,
+            category,
+            price: parseFloat(price),
         });
 
         res.status(201).json({
@@ -85,7 +86,7 @@ export const update = async (req, res) => {
 
         const data = await model.update(id, req.body);
         res.json({
-            message: `O registro "${data.nome}" foi atualizado com sucesso!`,
+            message: `O registro "${data.name}" foi atualizado com sucesso!`,
             data,
         });
     } catch (error) {
@@ -107,7 +108,7 @@ export const remove = async (req, res) => {
 
         await model.remove(id);
         res.json({
-            message: `O registro "${exists.nome}" foi deletado com sucesso!`,
+            message: `O registro "${exists.name}" foi deletado com sucesso!`,
             deletado: exists,
         });
     } catch (error) {
